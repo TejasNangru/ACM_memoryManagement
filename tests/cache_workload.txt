@@ -1,0 +1,15 @@
+# Cache Access Workload
+# Purpose: Validate cache hits, misses, and miss penalty propagation
+
+cache_read 64
+cache_read 64
+cache_read 128
+cache_read 64
+
+cache_write 256
+cache_write 256
+
+cache_read 512
+cache_read 512
+
+cache_stats

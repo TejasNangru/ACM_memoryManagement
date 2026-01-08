@@ -1,0 +1,24 @@
+Correctness Criteria
+
+Memory Allocation:
+- Allocated memory + free memory must equal total memory.
+- Freed blocks must be merged with adjacent free blocks.
+- Allocation strategies must follow their respective policies:
+  - First Fit: first suitable free block
+  - Best Fit: smallest suitable free block
+  - Worst Fit: largest suitable free block
+
+Fragmentation:
+- External fragmentation must increase when free memory is split.
+- External fragmentation must decrease after block coalescing.
+- Internal fragmentation is minimal due to exact block sizing.
+
+Cache Simulation:
+- First access to a new address must result in a cache miss.
+- Repeated access to the same address must result in a cache hit.
+- On cache miss, access time must include lower-level cache or memory latency.
+- Write-through policy must update memory on every write.
+
+Statistics:
+- Hit and miss counters must reflect actual access behavior.
+- Average Memory Access Time must be correctly computed.

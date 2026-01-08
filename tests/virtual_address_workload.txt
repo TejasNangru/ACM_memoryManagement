@@ -1,0 +1,21 @@
+# Virtual Address Access Log (Conceptual)
+# Purpose: Demonstrate expected virtual-to-physical translation behavior
+
+Process 1:
+Virtual Address: 0x0040
+Page Number: 1
+Offset: 64
+Page Table Hit → Physical Frame 5
+Physical Address: Frame 5 + Offset 64
+Cache Access → L1 miss → L2 miss → Memory
+
+Process 1:
+Virtual Address: 0x0040
+Page Table Hit → Same Physical Frame
+Cache Access → L1 hit
+
+Process 2:
+Virtual Address: 0x01A0
+Page Number: 6
+Page Fault → Page loaded into Frame 2
+Cache Access → L1 miss → L2 miss → Memory
