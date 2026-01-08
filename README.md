@@ -1,129 +1,143 @@
 # ACM_memoryManagement
 
-Memory Management Simulator
+# DEMO-VIDEO: https://www.loom.com/share/e8ce8a1edbdb4b2aba69fc0b8113ae42?t=14
 
-A command-line simulator that models key operating system memory management concepts, including dynamic memory allocation, fragmentation analysis, and multilevel CPU cache behavior.
-The project focuses on correctness, modular design, and clear observation of system-level trade-offs.
+Memory Management Simulator — a command-line simulator that models key operating system memory management concepts, including dynamic memory allocation, fragmentation analysis, and a two-level CPU cache simulator.
 
-Features
-Physical Memory Management
+- Focus: correctness, modular design, and clear observation of system-level trade-offs.
 
-Simulates a contiguous block of physical memory
+## Table of contents
+- [Features](#features)
+- [Project structure](#project-structure)
+- [Quick start](#quick-start)
+- [CLI commands & examples](#cli-commands--examples)
+  - [Memory management commands](#memory-management-commands)
+  - [Cache simulation commands](#cache-simulation-commands)
+  - [Utility commands](#utility-commands)
+- [Testing](#testing)
+- [Design notes](#design-notes)
+- [Contributing](#contributing)
+- [License & contact](#license--contact)
 
-Supports dynamic allocation and deallocation
+## Features
+Physical memory and allocator:
+- Simulates a contiguous block of physical memory.
+- Dynamic allocation and deallocation with block splitting and coalescing.
+- Allocation strategies: `first_fit`, `best_fit`, `worst_fit`.
+- Fragmentation statistics: utilization, external fragmentation, allocation success/failure rates.
 
-Implements block splitting and coalescing
+Cache simulation:
+- Two-level cache hierarchy (L1, L2).
+- Direct-mapped caches, FIFO replacement.
+- Write-through policy; configurable miss penalty propagation.
+- Hit/miss tracking and Average Memory Access Time (AMAT).
 
-Allocation strategies:
+Interactive CLI:
+- Allocate, free, visualize memory layout.
+- Switch allocation strategies at runtime.
+- Simulate cache reads/writes and view detailed statistics.
 
-First Fit
-
-Best Fit
-
-Worst Fit
-
-Fragmentation & Statistics
-
-Memory utilization
-
-External fragmentation
-
-Allocation success/failure rate
-
-Internal fragmentation (minimal due to exact block sizing)
-
-Multilevel Cache Simulation
-
-Two-level cache hierarchy (L1, L2)
-
-Direct-mapped caches
-
-FIFO replacement policy
-
-Write-through write policy
-
-Miss penalty propagation
-
-Cache hit/miss tracking
-
-Average Memory Access Time (AMAT)
-
-Interactive CLI
-
-Allocate, free, and visualize memory
-
-Switch allocation strategies at runtime
-
-Simulate cache reads and writes
-
-View detailed memory and cache statistics
-
-Project Structure
+## Project structure
 memory-simulator/
-├─ src/
-│  ├─ allocator/        # Allocation algorithms
-│  ├─ memory/           # Memory manager
-│  ├─ cache/            # Cache simulation
-│  ├─ cli/              # Command-line interface
-│  └─ main.cpp
-├─ tests/               # Sample workloads and logs
-├─ docs/                # Design document
-├─ Makefile
+├─ src/  
+│  ├─ allocator/        # Allocation algorithms (first/best/worst fit)  
+│  ├─ memory/           # Memory manager, block splitting/coalescing  
+│  ├─ cache/            # Cache simulation and statistics  
+│  ├─ cli/              # Command-line interface and parsers  
+│  └─ main.cpp          # Entry point  
+├─ tests/               # Sample workloads and logs (memory & cache)  
+├─ docs/                # Design document and optional extensions  
+├─ Makefile  
 └─ README.md
 
-Build & Run
+## Quick start
+
 Build
+```bash
 make
+```
 
 Run
+```bash
 ./memsim
+```
 
-CLI Commands
-Memory Management
-init memory <size>
-set allocator <first_fit | best_fit | worst_fit>
-malloc <size>
-free <block_id>
-dump
-stats
+The simulator launches an interactive CLI. Commands are listed below.
 
-Cache Simulation
-cache_read <address>
-cache_write <address>
-cache_stats
+## CLI commands & examples
 
-Testing
+General notes:
+- Commands are space-separated tokens.
+- Sizes/addresses are decimal by default; hex addresses (e.g., `0x10`) are accepted where noted.
+- The CLI prints IDs for allocated blocks to reference when freeing.
 
-Sample input workloads and logs are provided in the tests/ directory:
+Memory management commands
+- init memory <size>  
+  Initialize physical memory (bytes). Example:
+  ```
+  init memory 4096
+  ```
+- set allocator <first_fit | best_fit | worst_fit>  
+  Select allocator strategy at runtime. Example:
+  ```
+  set allocator best_fit
+  ```
+- malloc <size>  
+  Allocate a block and return a block id. Example:
+  ```
+  malloc 128
+  # => Allocated block id: 1 (address: 64, size: 128)
+  ```
+- free <block_id>  
+  Free an allocated block (coalescing applied). Example:
+  ```
+  free 1
+  ```
+- dump  
+  Print a human-readable memory map (free/used blocks, addresses, sizes).
+- stats  
+  Print memory statistics: total memory, used, free, external fragmentation, allocation success rate.
 
-Memory allocation workloads
+Cache simulation commands
+- cache_read <address>  
+  Simulate load from the given physical address. Example:
+  ```
+  cache_read 0x3C
+  ```
+- cache_write <address>  
+  Simulate store to the address (write-through policy). Example:
+  ```
+  cache_write 60
+  ```
+- cache_stats  
+  Print cache statistics: accesses, hits/misses per level (L1/L2), hit rates, AMAT.
 
-Cache access workloads
+Utility commands
+- help  
+  List available commands and short descriptions.
+- exit / quit  
+  Exit the simulator.
 
-Conceptual virtual address access logs
+## Testing
+- tests/ contains sample workloads and expected logs for manual verification.
+- Tests are executed manually through the CLI to preserve deterministic ordering and to make outputs inspectable.
+- Suggested sample flows:
+  - Run an allocation workload to observe fragmentation and allocator behavior.
+  - Run cache access traces to measure hit/miss rates and AMAT.
 
-Expected correctness criteria
+## Design notes
+- Cache simulation and memory allocation are intentionally decoupled for modularity and easier testing.
+- Implemented features prioritize clarity and correctness over micro-optimizations.
+- Optional features described in docs/:
+  - Buddy allocator
+  - Virtual memory / paging
+  - Associative caches / configurable replacement policies
 
-Tests are executed manually via the CLI due to deterministic behavior.
+## Contributing
+- Contributions welcome — open an issue to discuss features or bug reports.
+- Please follow a small PR pattern: one logical change per branch with a short description and tests (where applicable).
+- Code style: keep modules small and single-responsibility; add unit tests in tests/ for new behaviors.
 
-Design Notes
-
-Buddy allocation and virtual memory paging are not implemented (optional features)
-
-Their designs are described conceptually in the design document
-
-Cache simulation and memory allocation are intentionally decoupled
-
-Demo
-
-A short terminal recording demonstrates:
-
-Memory allocation and deallocation
-
-Fragmentation and statistics
-
-Cache hits, misses, and access time behavior
-
-Conclusion
-
-This simulator provides a clear, modular, and accurate model of core OS memory management mechanisms, emphasizing algorithmic correctness and performance trade-offs.
+## License & contact
+- See the repository LICENSE file for license details (add one if missing).
+- Author / repo: [TejasNangru](https://github.com/TejasNangru)
